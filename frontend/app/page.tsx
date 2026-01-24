@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import Link from "next/link";
 import {
   // ... existing imports
   Lock, // Add this
@@ -28,12 +29,12 @@ import {
 const ToolCard = ({
   title,
   description,
-
+  href,
   delay,
 }: {
   title: string;
   description: string;
-
+  href: string;
   delay: number;
 }) => (
   <motion.div
@@ -50,8 +51,13 @@ const ToolCard = ({
       {description}
     </p>
 
-    <div className="mt-6 flex items-center text-sm font-medium text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0">
-      Try now <ArrowRight size={16} className="ml-2" />
+    <div className="mt-6 flex items-center text-sm font-medium text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2.5 group-hover:translate-x-0">
+      <Link
+        href={href}
+        className="mt-6 inline-flex items-center text-sm font-medium text-blue-400 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2.5 group-hover:translate-x-0 cursor-pointer"
+      >
+        Try now <ArrowRight size={16} className="ml-2" />
+      </Link>
     </div>
   </motion.div>
 );
@@ -236,16 +242,19 @@ export default function LandingPage() {
             <ToolCard
               title="NL2SQL Generator"
               description="Transforms natural language into precise SQL queries. It doesn't just guess; it reads your schema to ensure valid table and column references every time."
+              href="/nl2sql"
               delay={0.1}
             />
             <ToolCard
               title="Query Corrector"
               description="Have a broken query? Paste it here. We identify syntax errors, logical flaws, and schema mismatches, then auto-fix them in milliseconds."
+              href="/querycorrector"
               delay={0.2}
             />
             <ToolCard
               title="Query Explainer"
               description="Demystify complex JOINs and subqueries. Get a plain English breakdown of what any SQL snippet is actually doing to your database."
+              href="/queryexplainer"
               delay={0.3}
             />
           </div>

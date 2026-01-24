@@ -942,7 +942,7 @@ export default function QueryExplainer({
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
         {/* Header */}
-        <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 z-20 sticky top-0">
+        <header className="h-16  bg-white/80 backdrop-blur-md flex items-center justify-between px-6 z-20 sticky top-0">
           <div className="flex items-center gap-4">
             {!sidebarOpen && (
               <button
@@ -952,10 +952,10 @@ export default function QueryExplainer({
                 <PanelLeft className="w-5 h-5" />
               </button>
             )}
-            <h1 className="text-sm font-semibold text-slate-500 hidden md:block">
+            <h1 className="text-lg font-bold text-black hidden md:block">
               {user
                 ? `Welcome back, ${user.full_name}`
-                : "SQL Explanation Tool"}
+                : "Get your query explained"}
             </h1>
           </div>
 
@@ -965,9 +965,6 @@ export default function QueryExplainer({
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-slate-800">
                     {user.full_name}
-                  </p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">
-                    Pro Plan
                   </p>
                 </div>
                 <button
@@ -989,14 +986,14 @@ export default function QueryExplainer({
         </header>
 
         {/* Scrollable Workspace */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 w-full">
+        <div className="flex-1 overflow-y-auto p-4 bg-white md:p-8 w-full">
           <div className="max-w-7xl mx-auto space-y-8">
             {/* 1. INPUT CARD */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-300">
               <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
                   <Database className="w-4 h-4" />
-                  <span>Input SQL Query</span>
+                  <span className="font-bold">Input SQL Query</span>
                 </div>
               </div>
               <textarea

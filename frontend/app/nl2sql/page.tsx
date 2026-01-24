@@ -182,7 +182,7 @@ const EditorPanel = React.memo(
     <div className="max-w-4xl mx-auto bg-white w-full h-full flex flex-col px-1 md:px-6 py-2 md:py-6">
       <div className="mb-6 md:mb-8 text-center md:text-left">
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-          GETSQL
+          getSQL
         </h1>
         <p className="text-slate-500 text-sm md:text-base mt-2 font-medium">
           Turn natural language into optimized SQL instantly.
@@ -195,9 +195,7 @@ const EditorPanel = React.memo(
       >
         {/* Main Input Area */}
         <div className="flex-1 p-5 md:p-8 flex flex-col min-h-0 relative z-10">
-          <div className="absolute top-4 right-4 md:top-6 md:right-6 opacity-20 pointer-events-none">
-            <Command className="w-12 h-12 text-slate-300" />
-          </div>
+          <div className="absolute top-4 right-4 md:top-6 md:right-6 opacity-20 pointer-events-none"></div>
 
           <textarea
             value={input}
@@ -249,7 +247,6 @@ const EditorPanel = React.memo(
             />
           </button>
 
-          {/* Generate Button */}
           <button
             onClick={handleGenerate}
             disabled={loading || !input}

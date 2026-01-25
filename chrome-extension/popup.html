@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>SQL AI Tools</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="tabs">
+    <button data-tab="generate" class="active">NL → SQL</button>
+    <button data-tab="explain">Explain</button>
+    <button data-tab="correct">Correct</button>
+  </div>
+
+  <textarea id="input" placeholder="Enter natural language or SQL..."></textarea>
+
+  <button id="run">Run</button>
+
+  <pre id="output"></pre>
+
+  <script src="popup.js"></script>
+</body>
+</html>

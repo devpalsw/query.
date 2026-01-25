@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+
 import { useHistory } from "@/components/hooks/useHistory";
 import HeroSection from "@/components/ui/Hero";
 import { LogOut, User, CheckCircle2, HomeIcon } from "lucide-react";

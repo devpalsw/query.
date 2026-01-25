@@ -24,6 +24,64 @@ import {
   Cpu,
 } from "lucide-react";
 
+const QuickTrialChat = () => {
+  const [prompt, setPrompt] = React.useState("");
+  const [activeTool, setActiveTool] = React.useState("nl2sql");
+
+  const tools = [
+    { id: "nl2sql", name: "NL2SQL", path: "/nl2sql" },
+    { id: "querycorrector", name: "Corrector", path: "/querycorrector" },
+    { id: "queryexplainer", name: "Explainer", path: "/queryexplainer" },
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+      className="mx-auto mt-12 max-w-2xl w-full px-4"
+    >
+      <div className="relative rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-xl shadow-2xl">
+        {/* Tool Selector Tabs */}
+        <div className="flex gap-1 mb-2 p-1">
+          {tools.map((tool) => (
+            <button
+              key={tool.id}
+              onClick={() => setActiveTool(tool.id)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeTool === tool.id
+                  ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              {tool.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Input Area */}
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder={`Ask our ${activeTool} agent...`}
+            className="w-full bg-transparent px-4 py-4 text-sm text-white outline-hidden placeholder:text-gray-600"
+          />
+          <Link
+            href={`${tools.find((t) => t.id === activeTool)?.path}?prompt=${encodeURIComponent(prompt)}`}
+            className="absolute right-2 p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+          >
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </div>
+      <p className="mt-3 text-center text-xs text-gray-500">
+        Try: "Find all users who joined in the last 30 days"
+      </p>
+    </motion.div>
+  );
+};
+
 // --- Components ---
 
 const ToolCard = ({
@@ -129,19 +187,44 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-15 lg:pt-48 lg:pb-20">
-        <div className="absolute inset-0 -z-10 bg-[radial-linear(ellipse_at_top,_var(--tw-linear-stops))] from-blue-900/20 via-[#05050A] to-[#05050A]" />
+      {/* Hero Section */}
+      <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 overflow-hidden">
+        {/* --- START BACKGROUND GRAPHICS --- */}
+        <div className="absolute inset-0 -z-10">
+          {/* 1. The Main Deep Blue Glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-900/30 via-[#05050A] to-[#05050A]" />
 
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6 inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400"
-          >
-            Powered by Gemini 2.5
-          </motion.div> */}
+          {/* 2. The Subtle Grid (Fades out at the bottom) */}
+          <div
+            className="absolute inset-0 opacity-[0.15]"
+            style={{
+              backgroundImage: `linear-gradient(to right, #3b82f6 1px, transparent 1px), 
+                          linear-gradient(to bottom, #3b82f6 1px, transparent 1px)`,
+              backgroundSize: "4rem 4rem",
+              maskImage:
+                "radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%)",
+            }}
+          />
 
+          {/* 3. The Animated Soft Orb */}
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute left-1/2 top-[-10%] -translate-x-1/2 h-[600px] w-[1000px] rounded-full bg-blue-600/10 blur-[120px]"
+          />
+        </div>
+        {/* --- END BACKGROUND GRAPHICS --- */}
+
+        <div className="mx-auto max-w-7xl px-6 text-center relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,26 +244,9 @@ export default function LandingPage() {
             The schema-aware SQL agent that actually understands your database
             structure. Zero friction, zero hallucinations.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex justify-center gap-4"
-          >
-            {/* <button className="rounded-full bg-blue-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:scale-105 transition-all">
-              NL To SQL
-            </button>
-            <button className="rounded-full bg-blue-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:scale-105 transition-all">
-              Query Explainer
-            </button>
-            <button className="rounded-full bg-blue-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:scale-105 transition-all">
-              Query Corrector
-            </button> */}
-          </motion.div>
         </div>
       </section>
-
+      <QuickTrialChat />
       {/* Scroll Animated Video Section */}
       {/* IMPROVED Scroll Animated Video Section */}
       <div ref={containerRef} className="relative h-[120vh] -mb-20">

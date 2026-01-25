@@ -602,6 +602,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useHistory } from "@/components/hooks/useHistory";
 import {
@@ -674,6 +675,16 @@ export default function QueryExplainer({
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLimitModal, setShowLimitModal] = useState(false);
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const prompt = searchParams.get("prompt");
+    if (prompt) {
+      setInput(prompt);
+      // Optional: trigger the API call automatically if prompt exists
+    }
+  }, [searchParams]);
 
   // Sync Status State
   const [syncStatus, setSyncStatus] = useState<"idle" | "syncing" | "done">(

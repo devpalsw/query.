@@ -317,14 +317,11 @@ export default function ZenSqlEditor({ isPro }: { isPro?: boolean }) {
     const combinedPrompt = `\n### SCHEMA:\n${schema}\n\n### REQUEST:\n${input}\n`;
 
     try {
-      const response = await fetch(
-        "https://justanothergptwrapper-ak03.onrender.com/chat",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: combinedPrompt }),
-        },
-      );
+      const response = await fetch("https://query-1-4y9u.onrender.com/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: combinedPrompt }),
+      });
 
       if (!response.ok) throw new Error("Generation failed");
       const data = await response.json();

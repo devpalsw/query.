@@ -156,7 +156,7 @@ function QueryExplainerContent({ isPro: initialIsPro }: { isPro?: boolean }) {
     try {
       // Call the FastAPI endpoint
       const response = await fetch(
-        "https://justanothergptwrapper-ak03.onrender.com/explainquery",
+        "https://query-1-4y9u.onrender.com/explainquery",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

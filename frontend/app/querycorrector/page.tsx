@@ -143,7 +143,7 @@ function QueryCorrectorContent({ isPro: initialIsPro }: { isPro?: boolean }) {
 
     try {
       const response = await fetch(
-        "https://justanothergptwrapper-ak03.onrender.com/correctquery",
+        "https://query-1-4y9u.onrender.com/correctquery",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

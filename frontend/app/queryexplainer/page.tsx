@@ -110,7 +110,7 @@
 
 //     try {
 //       // Call the FastAPI endpoint for explanation
-//       const response = await fetch("http://localhost:8000/explainquery", {
+//       const response = await fetch("https://justanothergptwrapper-ak03.onrender.com/explainquery", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({ sql_query: input }),
@@ -758,11 +758,14 @@ export default function QueryExplainer({
 
     try {
       // Call the FastAPI endpoint
-      const response = await fetch("http://localhost:8000/explainquery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sql_query: input }),
-      });
+      const response = await fetch(
+        "https://justanothergptwrapper-ak03.onrender.com/explainquery",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sql_query: input }),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to explain query");
 

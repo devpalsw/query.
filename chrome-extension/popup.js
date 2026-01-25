@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://justanothergptwrapper-ak03.onrender.com";
 
 let currentTab = "generate";
 

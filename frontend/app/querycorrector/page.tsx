@@ -143,11 +143,14 @@ export default function QueryCorrector({
     setOutput(null);
 
     try {
-      const response = await fetch("http://localhost:8000/correctquery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sql_query: input }),
-      });
+      const response = await fetch(
+        "https://justanothergptwrapper-ak03.onrender.com/correctquery",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sql_query: input }),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to fetch corrected query");
 

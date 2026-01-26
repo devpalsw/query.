@@ -3,26 +3,8 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
-import {
-  // ... existing imports
-  Lock, // Add this
-  GitMerge,
-  Globe,
-  Code2,
-  Box,
-  Layers, // Add this (or RefreshCcw)
-} from "lucide-react";
 
-import {
-  Database,
-  Sparkles,
-  Search,
-  Zap,
-  ShieldCheck,
-  ArrowRight,
-  Terminal,
-  Cpu,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const QuickTrialChat = () => {
   const [prompt, setPrompt] = React.useState("");
@@ -158,28 +140,18 @@ export default function LandingPage() {
   const scale = useTransform(smoothProgress, [0, 1], [0.8, 1]);
   const opacity = useTransform(smoothProgress, [0, 0.5], [0.6, 1]);
   return (
-    <div className="min-h-screen bg-[#05050A] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#05050A]/80 backdrop-blur-md">
+    <div
+      className="min-h-screen bg-[#05050A] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans overflow-hidden  inset-0 h-full w-full 
+bg-[radial-gradient(circle,#73737350_1px,transparent_1px)] 
+bg-size-[20px_20px]"
+    >
+      <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#05050A]/80 backdrop-blur-md ">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
+          <div className="flex items-center tracking-widest font-bold text-xl ">
             {/* <Database className="text-blue-500" /> */}
-            GET<span className="text-blue-500">SQL</span>
+            GET<span className="text-blue-500 ">SQL</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-            {/* <a href="#features" className="hover:text-white transition-colors">
-              Features
-            </a>
-            <a href="#metrics" className="hover:text-white transition-colors">
-              Performance
-            </a>
-            <a
-              href="#how-it-works"
-              className="hover:text-white transition-colors"
-            >
-              Docs
-            </a> */}
-          </div>
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400"></div>
           <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black hover:bg-gray-200 transition-colors">
             <a href="/auth/signin"> Get Started</a>
           </button>
@@ -188,7 +160,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       {/* Hero Section */}
-      <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 overflow-hidden">
+      <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 ">
         {/* --- START BACKGROUND GRAPHICS --- */}
         <div className="absolute inset-0 -z-10">
           {/* 1. The Main Deep Blue Glow */}
@@ -239,10 +211,11 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-gray-400 leading-relaxed"
+            className="mx-auto mt-6 max-w-2xl text-lg text-shadow-white tracking-wide leading-relaxed"
           >
             The schema-aware SQL agent that actually understands your database
-            structure. Zero friction, zero hallucinations.
+            structure.
+            <br /> Zero friction, zero hallucinations.
           </motion.p>
         </div>
       </section>
@@ -294,7 +267,11 @@ export default function LandingPage() {
       </div>
 
       {/* Tools Orchestration Section */}
-      <section className="py-24 bg-[#05050A]">
+      <section
+        className="py-24 bg-[#05050A] overflow-hidden  inset-0 h-full w-full 
+bg-[radial-gradient(circle,#73737350_1px,transparent_1px)] 
+bg-size-[20px_20px]"
+      >
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -331,7 +308,7 @@ export default function LandingPage() {
 
       {/* Metrics / 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#05050A] py-12">
+      <footer className=" bg-radial-[#05050A] rounded-t-4xl py-12 ">
         <div className="mx-auto max-w-7xl px-6 text-center text-gray-500 text-sm">
           <p>&copy; devPals</p>
         </div>

@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
-
+import TimelineStep from "@/components/ui/TimelineStep";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+
+import { useAuthStore } from "../lib/store/useAuthStore";
 
 const QuickTrialChat = () => {
   const [prompt, setPrompt] = React.useState("");
@@ -121,24 +125,50 @@ const FeatureItem = ({
 );
 
 export default function LandingPage() {
+  const router = useRouter();
+
+  const handleAccess = () => {
+    if (!user) {
+      router.push("/auth/signin");
+    } else {
+      router.push("/sqltoer");
+    }
+  };
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll Animation Hooks
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "start start"],
-  });
+  // Auth state
+  const { user, isLoading, fetchUser, logout } = useAuthStore();
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  useEffect(() => {
+    if (isLoading) {
+      fetchUser();
+    }
+    // Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      smoothWheel: true, // Replaces 'smooth' for mouse wheel
+      syncTouch: true, // Use this if you want to smooth touch scrolling
+      // direction: "vertical",
+      // gestureDirection: "vertical",
+      touchMultiplier: 2,
+    });
 
-  // Transform for the video container (Scale up and un-tilt)
-  const rotateX = useTransform(smoothProgress, [0, 1], [45, 0]);
-  const scale = useTransform(smoothProgress, [0, 1], [0.8, 1]);
-  const opacity = useTransform(smoothProgress, [0, 0.5], [0.6, 1]);
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    return () => {
+      lenis.destroy();
+    };
+  }, [isLoading, fetchUser]);
+
+  // Timeline scroll animation
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: timelineProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start end", "end start"],
+  });
   return (
     <div
       className="min-h-screen bg-[#05050A] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans overflow-hidden  inset-0 h-full w-full 
@@ -152,25 +182,43 @@ bg-size-[20px_20px]"
             GET<span className="text-blue-500 ">SQL</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400"></div>
-          <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black hover:bg-gray-200 transition-colors">
-            <a href="/auth/signin"> Get Started</a>
-          </button>
+          {/* Auth-aware nav button */}
+          {isLoading ? (
+            <div className="rounded-full bg-white/20 px-5 py-2 text-sm font-semibold text-gray-400 animate-pulse">
+              Loading...
+            </div>
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-white/80">
+                Hi, {user.full_name || user.email}
+              </span>
+              <button
+                className="rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+                onClick={logout}
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black hover:bg-gray-200 transition-colors">
+              <a href="/auth/signin"> Get Started</a>
+            </button>
+          )}
         </div>
       </nav>
-
       {/* Hero Section */}
       {/* Hero Section */}
-      <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 ">
-        {/* --- START BACKGROUND GRAPHICS --- */}
+      <section className="relative pt-20 pb-12 lg:pt-36 lg:pb-0 overflow-hidden">
+        {/* BACKGROUND */}
         <div className="absolute inset-0 -z-10">
-          {/* 1. The Main Deep Blue Glow */}
+          {/* radial glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-900/30 via-[#05050A] to-[#05050A]" />
 
-          {/* 2. The Subtle Grid (Fades out at the bottom) */}
+          {/* grid */}
           <div
             className="absolute inset-0 opacity-[0.15]"
             style={{
-              backgroundImage: `linear-gradient(to right, #3b82f6 1px, transparent 1px), 
+              backgroundImage: `linear-gradient(to right, #3b82f6 1px, transparent 1px),
                           linear-gradient(to bottom, #3b82f6 1px, transparent 1px)`,
               backgroundSize: "4rem 4rem",
               maskImage:
@@ -180,7 +228,7 @@ bg-size-[20px_20px]"
             }}
           />
 
-          {/* 3. The Animated Soft Orb */}
+          {/* animated glow */}
           <motion.div
             animate={{
               scale: [1, 1.1, 1],
@@ -194,77 +242,151 @@ bg-size-[20px_20px]"
             className="absolute left-1/2 top-[-10%] -translate-x-1/2 h-[600px] w-[1000px] rounded-full bg-blue-600/10 blur-[120px]"
           />
         </div>
-        {/* --- END BACKGROUND GRAPHICS --- */}
 
-        <div className="mx-auto max-w-7xl px-6 text-center relative z-10">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mx-auto p-2 max-w-4xl text-5xl font-bold tracking-tight md:text-7xl bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
-          >
-            Stop Hallucinating.
-            <br /> Start Querying.
-          </motion.h1>
+        {/* CONTENT */}
+        <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+          {/* LEFT SIDE */}
+          <div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
+            >
+              Stop Hallucinating.
+              <br />
+              Start Querying.
+            </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-shadow-white tracking-wide leading-relaxed"
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mt-6 max-w-xl text-lg text-gray-300 leading-relaxed"
+            >
+              The schema-aware SQL agent that actually understands your
+              database. Generate queries, visualize relationships, and export
+              production-ready ER diagrams instantly.
+            </motion.p>
+
+            {/* feature list */}
+            <ul className="mt-8 space-y-3 text-gray-400">
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Convert SQL schemas into ER diagrams
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Understand complex relationships instantly
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Export as PNG, SVG, PDF or JSON
+              </li>
+            </ul>
+
+            {/* CTA */}
+            <div className="flex gap-4 mt-10">
+              <button
+                onClick={handleAccess}
+                className="inline-flex items-center px-6 py-1 rounded-bl-2xl rounded-tr-2xl rounded-br-2xl bg-blue-600 hover:bg-blue-500 transition text-white font-medium shadow-lg shadow-blue-500/20"
+              >
+                Try SQL → ER
+                <ArrowRight size={18} className="ml-2" />
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE - VISUAL */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative"
           >
-            The schema-aware SQL agent that actually understands your database
-            structure.
-            <br /> Zero friction, zero hallucinations.
-          </motion.p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-2xl">
+              <div className="text-xs text-gray-400 mb-3">
+                Example SQL Schema
+              </div>
+
+              <pre className="text-sm text-blue-300 font-mono leading-relaxed">
+                {`CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name TEXT,
+  email TEXT
+);
+
+CREATE TABLE orders (
+  id INT PRIMARY KEY,
+  user_id INT,
+  total FLOAT
+);`}
+              </pre>
+
+              <div className="mt-6 text-xs text-gray-500">
+                → Automatically generates a relational ER diagram
+              </div>
+            </div>
+
+            {/* glow */}
+            <div className="absolute -z-10 inset-0 blur-3xl bg-blue-500/20 rounded-full" />
+          </motion.div>
         </div>
       </section>
+
       <QuickTrialChat />
-      {/* Scroll Animated Video Section */}
-      {/* IMPROVED Scroll Animated Video Section */}
-      <div ref={containerRef} className="relative h-[120vh] -mb-20">
-        {/* Sticky container centers the video in the viewport */}
-        <div className="sticky top-0 flex h-screen items-center justify-center  overflow-hidden px-6">
-          {/* Perspective wrapper is CRITICAL for 3D effect */}
-          <div className="relative w-full  max-w-5xl [perspective:1000px]">
-            <motion.div
-              style={{
-                scale,
-                rotateX,
-                opacity,
-                transformStyle: "preserve-3d",
-              }}
-              // 1. Removed static borders, kept layout/shadow classes
-              className="relative aspect-video w-full overflow-hidden rounded-2xl shadow-2xl shadow-blue-900/20"
-            >
-              {/* 2. THE RUNNING BORDER LAYER: Spins behind the content */}
-              <div className="absolute inset-[-50%] bg-[conic-gradient(from_0deg,#f59e0b,#ef4444,#8b5cf6,#3b82f6,#10b981,#f59e0b)] animate-[spin_2s_linear_infinite]" />
-
-              {/* 3. THE CONTENT LAYER: Creates the "mask" with inset-1 (4px thickness) */}
-              {/* <div className="absolute inset-1 rounded-lg  overflow-hidden z-10"> */}
-              {/* --- PLACE ALL YOUR VIDEO UI & CONTENT HERE --- */}
-
-              {/* Mock Video UI */}
-
-              {/* Video Placeholder */}
-              <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-[#0f172a] to-[#020617]">
-                <div className="text-center relative z-0">
-                  {/* ... rest of your content ... */}
-                  <video
-                    src="/master.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover" // Optional: Ensures it fills the space
-                  />
-                </div>
-              </div>
-              {/* </div> */}
-            </motion.div>
+      {/* How It Works Timeline Section */}
+      <section
+        ref={timelineRef}
+        className="relative py-32 bg-transparent flex flex-col items-center"
+      >
+        <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center bg-linear-to-b from-blue-400 to-white bg-clip-text text-transparent">
+          How It Works
+        </h2>
+        <div className="relative w-full max-w-3xl mx-auto">
+          {/* Timeline vertical line */}
+          {/* <motion.div
+            className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-1 bg-linear-to-b from-blue-500/60 to-blue-900/10 rounded-full z-0"
+            style={{ scaleY: timelineProgress }}
+          /> */}
+          <div className="flex flex-col gap-32 relative z-10">
+            {/* Step 1 */}
+            <TimelineStep
+              step={1}
+              title="Ask in Natural Language"
+              description="Type your question about your data in plain English. No SQL knowledge needed!"
+              icon={
+                <ArrowRight size={28} className="rotate-180 text-blue-400" />
+              }
+              progress={timelineProgress}
+            />
+            {/* Step 2 */}
+            <TimelineStep
+              step={2}
+              title="Get SQL Instantly"
+              description="Our agent reads your schema and generates a valid, ready-to-run SQL query tailored to your database."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
+            {/* Step 3 */}
+            <TimelineStep
+              step={3}
+              title="Correct or Explain"
+              description="Paste any SQL to get instant corrections or a plain English explanation."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
+            {/* Step 4 */}
+            <TimelineStep
+              step={4}
+              title="Copy & Use"
+              description="Copy the result and use it in your app, dashboard, or anywhere you need."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Tools Orchestration Section */}
       <section
@@ -305,12 +427,11 @@ bg-size-[20px_20px]"
           </div>
         </div>
       </section>
-
       {/* Metrics / 
       {/* Footer */}
       <footer className=" bg-radial-[#05050A] rounded-t-4xl py-12 ">
         <div className="mx-auto max-w-7xl px-6 text-center text-gray-500 text-sm">
-          <p>&copy; devPals</p>
+          <p>&copy; KrishCodesW</p>
         </div>
       </footer>
     </div>

@@ -5,6 +5,7 @@ import Lenis from "@studio-freight/lenis";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 import TimelineStep from "@/components/ui/TimelineStep";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
 import { useAuthStore } from "../lib/store/useAuthStore";
@@ -124,6 +125,15 @@ const FeatureItem = ({
 );
 
 export default function LandingPage() {
+  const router = useRouter();
+
+  const handleAccess = () => {
+    if (!user) {
+      router.push("/auth/signin");
+    } else {
+      router.push("/sqltoer");
+    }
+  };
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auth state
@@ -198,17 +208,17 @@ bg-size-[20px_20px]"
       </nav>
       {/* Hero Section */}
       {/* Hero Section */}
-      <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 ">
-        {/* --- START BACKGROUND GRAPHICS --- */}
+      <section className="relative pt-20 pb-12 lg:pt-36 lg:pb-0 overflow-hidden">
+        {/* BACKGROUND */}
         <div className="absolute inset-0 -z-10">
-          {/* 1. The Main Deep Blue Glow */}
+          {/* radial glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-900/30 via-[#05050A] to-[#05050A]" />
 
-          {/* 2. The Subtle Grid (Fades out at the bottom) */}
+          {/* grid */}
           <div
             className="absolute inset-0 opacity-[0.15]"
             style={{
-              backgroundImage: `linear-gradient(to right, #3b82f6 1px, transparent 1px), 
+              backgroundImage: `linear-gradient(to right, #3b82f6 1px, transparent 1px),
                           linear-gradient(to bottom, #3b82f6 1px, transparent 1px)`,
               backgroundSize: "4rem 4rem",
               maskImage:
@@ -218,7 +228,7 @@ bg-size-[20px_20px]"
             }}
           />
 
-          {/* 3. The Animated Soft Orb */}
+          {/* animated glow */}
           <motion.div
             animate={{
               scale: [1, 1.1, 1],
@@ -232,31 +242,98 @@ bg-size-[20px_20px]"
             className="absolute left-1/2 top-[-10%] -translate-x-1/2 h-[600px] w-[1000px] rounded-full bg-blue-600/10 blur-[120px]"
           />
         </div>
-        {/* --- END BACKGROUND GRAPHICS --- */}
 
-        <div className="mx-auto max-w-7xl px-6 text-center relative z-10">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mx-auto p-2 max-w-4xl text-5xl font-bold tracking-tight md:text-7xl bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
-          >
-            Stop Hallucinating.
-            <br /> Start Querying.
-          </motion.h1>
+        {/* CONTENT */}
+        <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+          {/* LEFT SIDE */}
+          <div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/60"
+            >
+              Stop Hallucinating.
+              <br />
+              Start Querying.
+            </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-shadow-white tracking-wide leading-relaxed"
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mt-6 max-w-xl text-lg text-gray-300 leading-relaxed"
+            >
+              The schema-aware SQL agent that actually understands your
+              database. Generate queries, visualize relationships, and export
+              production-ready ER diagrams instantly.
+            </motion.p>
+
+            {/* feature list */}
+            <ul className="mt-8 space-y-3 text-gray-400">
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Convert SQL schemas into ER diagrams
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Understand complex relationships instantly
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-blue-400">✓</span>
+                Export as PNG, SVG, PDF or JSON
+              </li>
+            </ul>
+
+            {/* CTA */}
+            <div className="flex gap-4 mt-10">
+              <button
+                onClick={handleAccess}
+                className="inline-flex items-center px-6 py-1 rounded-bl-2xl rounded-tr-2xl rounded-br-2xl bg-blue-600 hover:bg-blue-500 transition text-white font-medium shadow-lg shadow-blue-500/20"
+              >
+                Try SQL → ER
+                <ArrowRight size={18} className="ml-2" />
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE - VISUAL */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative"
           >
-            The schema-aware SQL agent that actually understands your database
-            structure.
-            <br /> Zero friction, zero hallucinations.
-          </motion.p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-2xl">
+              <div className="text-xs text-gray-400 mb-3">
+                Example SQL Schema
+              </div>
+
+              <pre className="text-sm text-blue-300 font-mono leading-relaxed">
+                {`CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name TEXT,
+  email TEXT
+);
+
+CREATE TABLE orders (
+  id INT PRIMARY KEY,
+  user_id INT,
+  total FLOAT
+);`}
+              </pre>
+
+              <div className="mt-6 text-xs text-gray-500">
+                → Automatically generates a relational ER diagram
+              </div>
+            </div>
+
+            {/* glow */}
+            <div className="absolute -z-10 inset-0 blur-3xl bg-blue-500/20 rounded-full" />
+          </motion.div>
         </div>
       </section>
+
       <QuickTrialChat />
       {/* How It Works Timeline Section */}
       <section

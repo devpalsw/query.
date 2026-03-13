@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
-
+import TimelineStep from "@/components/ui/TimelineStep";
 import { ArrowRight } from "lucide-react";
+
+import { useAuthStore } from "../lib/store/useAuthStore";
 
 const QuickTrialChat = () => {
   const [prompt, setPrompt] = React.useState("");
@@ -123,22 +126,39 @@ const FeatureItem = ({
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll Animation Hooks
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "start start"],
-  });
+  // Auth state
+  const { user, isLoading, fetchUser, logout } = useAuthStore();
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  useEffect(() => {
+    if (isLoading) {
+      fetchUser();
+    }
+    // Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      smoothWheel: true, // Replaces 'smooth' for mouse wheel
+      syncTouch: true, // Use this if you want to smooth touch scrolling
+      // direction: "vertical",
+      // gestureDirection: "vertical",
+      touchMultiplier: 2,
+    });
 
-  // Transform for the video container (Scale up and un-tilt)
-  const rotateX = useTransform(smoothProgress, [0, 1], [45, 0]);
-  const scale = useTransform(smoothProgress, [0, 1], [0.8, 1]);
-  const opacity = useTransform(smoothProgress, [0, 0.5], [0.6, 1]);
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    return () => {
+      lenis.destroy();
+    };
+  }, [isLoading, fetchUser]);
+
+  // Timeline scroll animation
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: timelineProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start end", "end start"],
+  });
   return (
     <div
       className="min-h-screen bg-[#05050A] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans overflow-hidden  inset-0 h-full w-full 
@@ -152,12 +172,30 @@ bg-size-[20px_20px]"
             GET<span className="text-blue-500 ">SQL</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400"></div>
-          <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black hover:bg-gray-200 transition-colors">
-            <a href="/auth/signin"> Get Started</a>
-          </button>
+          {/* Auth-aware nav button */}
+          {isLoading ? (
+            <div className="rounded-full bg-white/20 px-5 py-2 text-sm font-semibold text-gray-400 animate-pulse">
+              Loading...
+            </div>
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-white/80">
+                Hi, {user.full_name || user.email}
+              </span>
+              <button
+                className="rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+                onClick={logout}
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black hover:bg-gray-200 transition-colors">
+              <a href="/auth/signin"> Get Started</a>
+            </button>
+          )}
         </div>
       </nav>
-
       {/* Hero Section */}
       {/* Hero Section */}
       <section className="relative pt-16 pb-15 lg:pt-36 lg:pb-20 ">
@@ -220,51 +258,58 @@ bg-size-[20px_20px]"
         </div>
       </section>
       <QuickTrialChat />
-      {/* Scroll Animated Video Section */}
-      {/* IMPROVED Scroll Animated Video Section */}
-      <div ref={containerRef} className="relative h-[120vh] -mb-20">
-        {/* Sticky container centers the video in the viewport */}
-        <div className="sticky top-0 flex h-screen items-center justify-center  overflow-hidden px-6">
-          {/* Perspective wrapper is CRITICAL for 3D effect */}
-          <div className="relative w-full  max-w-5xl [perspective:1000px]">
-            <motion.div
-              style={{
-                scale,
-                rotateX,
-                opacity,
-                transformStyle: "preserve-3d",
-              }}
-              // 1. Removed static borders, kept layout/shadow classes
-              className="relative aspect-video w-full overflow-hidden rounded-2xl shadow-2xl shadow-blue-900/20"
-            >
-              {/* 2. THE RUNNING BORDER LAYER: Spins behind the content */}
-              <div className="absolute inset-[-50%] bg-[conic-gradient(from_0deg,#f59e0b,#ef4444,#8b5cf6,#3b82f6,#10b981,#f59e0b)] animate-[spin_2s_linear_infinite]" />
-
-              {/* 3. THE CONTENT LAYER: Creates the "mask" with inset-1 (4px thickness) */}
-              {/* <div className="absolute inset-1 rounded-lg  overflow-hidden z-10"> */}
-              {/* --- PLACE ALL YOUR VIDEO UI & CONTENT HERE --- */}
-
-              {/* Mock Video UI */}
-
-              {/* Video Placeholder */}
-              <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-[#0f172a] to-[#020617]">
-                <div className="text-center relative z-0">
-                  {/* ... rest of your content ... */}
-                  <video
-                    src="/master.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover" // Optional: Ensures it fills the space
-                  />
-                </div>
-              </div>
-              {/* </div> */}
-            </motion.div>
+      {/* How It Works Timeline Section */}
+      <section
+        ref={timelineRef}
+        className="relative py-32 bg-transparent flex flex-col items-center"
+      >
+        <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center bg-linear-to-b from-blue-400 to-white bg-clip-text text-transparent">
+          How It Works
+        </h2>
+        <div className="relative w-full max-w-3xl mx-auto">
+          {/* Timeline vertical line */}
+          {/* <motion.div
+            className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-1 bg-linear-to-b from-blue-500/60 to-blue-900/10 rounded-full z-0"
+            style={{ scaleY: timelineProgress }}
+          /> */}
+          <div className="flex flex-col gap-32 relative z-10">
+            {/* Step 1 */}
+            <TimelineStep
+              step={1}
+              title="Ask in Natural Language"
+              description="Type your question about your data in plain English. No SQL knowledge needed!"
+              icon={
+                <ArrowRight size={28} className="rotate-180 text-blue-400" />
+              }
+              progress={timelineProgress}
+            />
+            {/* Step 2 */}
+            <TimelineStep
+              step={2}
+              title="Get SQL Instantly"
+              description="Our agent reads your schema and generates a valid, ready-to-run SQL query tailored to your database."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
+            {/* Step 3 */}
+            <TimelineStep
+              step={3}
+              title="Correct or Explain"
+              description="Paste any SQL to get instant corrections or a plain English explanation."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
+            {/* Step 4 */}
+            <TimelineStep
+              step={4}
+              title="Copy & Use"
+              description="Copy the result and use it in your app, dashboard, or anywhere you need."
+              icon={<ArrowRight size={28} className="text-blue-400" />}
+              progress={timelineProgress}
+            />
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Tools Orchestration Section */}
       <section
@@ -305,12 +350,11 @@ bg-size-[20px_20px]"
           </div>
         </div>
       </section>
-
       {/* Metrics / 
       {/* Footer */}
       <footer className=" bg-radial-[#05050A] rounded-t-4xl py-12 ">
         <div className="mx-auto max-w-7xl px-6 text-center text-gray-500 text-sm">
-          <p>&copy; devPals</p>
+          <p>&copy; KrishCodesW</p>
         </div>
       </footer>
     </div>
